@@ -1,0 +1,1958 @@
+---
+title: "FPIK_Cur"
+output: html_document
+date: "2025-10-01"
+---
+
+```{r setup, include=FALSE}
+##LOADING PACKAGES
+library(tidyverse)
+library(gtools)
+library(plyr)
+library(magrittr)
+library(dplyr)
+library(lme4)
+library(ggplot2)
+library(tidyr)
+library(stringr)
+library(ggsignif)
+```
+
+
+```{r, include=FALSE}
+library(readr)
+library(dplyr)
+
+# Specify the path to your folder
+folder_path <- "/Users/kyliealberts/Desktop/FPIK_4/4_a"
+
+# List all CSV files in the folder
+csv_files <- list.files(folder_path, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to check if a CSV file has a specific column
+has_verification_code <- function(file_path) {
+  # Read only the first row to check column names
+  data <- read_csv(file_path, n_max = 1, show_col_types = FALSE)
+  
+  # Check if 'Verification Code' column exists
+  return("Verification Code" %in% colnames(data))
+}
+
+# Initialize an empty dataframe to store all data
+all_data <- tibble()
+
+# Loop through files, load and append if it has the 'Verification Code' column
+for(file_path in csv_files) {
+  if(has_verification_code(file_path)) {
+    # Load the CSV file
+    data <- read_csv(file_path, show_col_types = FALSE)
+    
+    # Ensure bruinID.text exists before modifying it
+    if("bruinID.text" %in% colnames(data)) {
+      # Convert to character immediately to prevent mismatches
+      data$bruinID.text <- as.character(data$bruinID.text)
+      
+      # Find the first non-missing value of bruinID.text
+      first_valid_bruinID <- data$bruinID.text[which(!is.na(data$bruinID.text) & data$bruinID.text != "")][1]
+      
+      # If a valid ID is found, fill all rows with it
+      if(!is.na(first_valid_bruinID)) {
+        data$bruinID.text <- first_valid_bruinID
+      }
+    }
+
+    # Convert other relevant columns to character
+    cols_to_convert <- c("textbox_comp_4.text", "textbox_comp_3.text", "textbox_comp.text",
+                         "Bruin_ID", "textboxAge_2.text", "textbox_comp_2.text", "textboxAge.text", "Bruin ID", "textboxBirthday.text")
+    
+    for(col in cols_to_convert) {
+      if(col %in% colnames(data)) {
+        data[[col]] <- as.character(data[[col]])
+      }
+    }
+    
+    # Append to the master dataframe
+    all_data <- bind_rows(all_data, data)
+    
+  } else {
+    cat("Skipping file, does not have 'Verification Code' column:", file_path, "\n")
+  }
+}
+
+# Now, all_data_b should have `bruinID.text` as character across all rows
+
+# At this point, all_data contains all the data from files with 'verification code'
+# You can now work with this combined dataframe
+```
+
+```{r, include=FALSE}
+library(readr)
+library(dplyr)
+
+# Specify the path to your folder
+folder_path_b <- "/Users/kyliealberts/Desktop/FPIK_4/4_b"
+
+# List all CSV files in the folder
+csv_files_b <- list.files(folder_path_b, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to check if a CSV file has a specific column
+has_verification_code_b <- function(file_path_b) {
+  # Read only the first row to check column names
+  data_b <- read_csv(file_path_b, n_max = 1, show_col_types = FALSE)
+  
+  # Check if 'Verification Code' column exists
+  return("Verification Code" %in% colnames(data_b))
+}
+
+# Initialize an empty dataframe to store all data
+all_data_b <- tibble()
+
+# Loop through files, load and append if it has the 'Verification Code' column
+for(file_path_b in csv_files_b) {
+  if(has_verification_code_b(file_path_b)) {
+    # Load the CSV file
+    data_b <- read_csv(file_path_b, show_col_types = FALSE)
+    
+    # Ensure bruinID.text exists before modifying it
+    if("bruinID.text" %in% colnames(data_b)) {
+      # Convert to character immediately to prevent mismatches
+      data_b$bruinID.text <- as.character(data_b$bruinID.text)
+      
+      # Find the first non-missing value of bruinID.text
+      first_valid_bruinID <- data_b$bruinID.text[which(!is.na(data_b$bruinID.text) & data_b$bruinID.text != "")][1]
+      
+      # If a valid ID is found, fill all rows with it
+      if(!is.na(first_valid_bruinID)) {
+        data_b$bruinID.text <- first_valid_bruinID
+      }
+    }
+
+    # Convert other relevant columns to character
+    cols_to_convert <- c("textbox_comp_4.text", "textbox_comp_3.text", "textbox_comp.text",
+                         "participant", "textboxAge_2.text", "textbox_comp_2.text", "textboxAge.text", "textboxBirthday.text")
+    
+    for(col in cols_to_convert) {
+      if(col %in% colnames(data_b)) {
+        data_b[[col]] <- as.character(data_b[[col]])
+      }
+    }
+    
+    # Append to the master dataframe
+    all_data_b <- bind_rows(all_data_b, data_b)
+    
+  } else {
+    cat("Skipping file, does not have 'Verification Code' column:", file_path_b, "\n")
+  }
+}
+
+# Now, all_data_b should have `bruinID.text` as character across all rows
+
+```
+
+```{r, include=FALSE}
+library(readr)
+library(dplyr)
+
+# Specify the path to your folder
+folder_path_c <- "/Users/kyliealberts/Desktop/FPIK_4/4_c"
+
+# List all CSV files in the folder
+csv_files_c <- list.files(folder_path_c, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to check if a CSV file has a specific column
+has_verification_code_c <- function(file_path_c) {
+  # Read only the first row to check column names
+  data_c <- read_csv(file_path_c, n_max = 1, show_col_types = FALSE)
+  
+  # Check if 'Verification Code' column exists
+  return("Verification Code" %in% colnames(data_c))
+}
+
+# Initialize an empty dataframe to store all data
+all_data_c <- tibble()
+
+# Loop through files, load and append if it has the 'Verification Code' column
+for(file_path_c in csv_files_c) {
+  if(has_verification_code_c(file_path_c)) {
+    # Load the CSV file
+    data_c <- read_csv(file_path_c, show_col_types = FALSE)
+    
+    # Ensure bruinID.text exists before modifying it
+    if("bruinID.text" %in% colnames(data_c)) {
+      # Convert to character immediately to prevent mismatches
+      data_c$bruinID.text <- as.character(data_c$bruinID.text)
+      
+      # Find the first non-missing value of bruinID.text
+      first_valid_bruinID <- data_c$bruinID.text[which(!is.na(data_c$bruinID.text) & data_c$bruinID.text != "")][1]
+      
+      # If a valid ID is found, fill all rows with it
+      if(!is.na(first_valid_bruinID)) {
+        data_c$bruinID.text <- first_valid_bruinID
+      }
+    }
+
+    # Convert other relevant columns to character
+    cols_to_convert <- c("textbox_comp_4.text", "textbox_comp_3.text", "textbox_comp.text",
+                         "participant", "textboxAge_2.text", "textbox_comp_2.text", "textboxAge.text", "textboxBirthday.text")
+    
+    for(col in cols_to_convert) {
+      if(col %in% colnames(data_c)) {
+        data_c[[col]] <- as.character(data_c[[col]])
+      }
+    }
+    
+    # Append to the master dataframe
+    all_data_c <- bind_rows(all_data_c, data_c)
+    
+  } else {
+    cat("Skipping file, does not have 'Verification Code' column:", file_path_c, "\n")
+  }
+}
+# At this point, all_data contains all the data from files with 'verification code'
+
+```
+
+```{r, include=FALSE}
+library(readr)
+library(dplyr)
+
+# Specify the path to your folder
+folder_path_oa <- "/Users/kyliealberts/Desktop/FPIK_4o/FPIK_4o_data"
+
+# List all CSV files in the folder
+csv_files_oa <- list.files(folder_path_oa, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to check if a CSV file has a specific column
+has_verification_code_oa <- function(file_path_oa) {
+  # Read only the first row to check column names
+  data_oa <- read_csv(file_path_oa, n_max = 1, show_col_types = FALSE)
+  
+  # Check if 'Verification Code' column exists
+  return("subjectResponseQ4" %in% colnames(data_oa))
+}
+
+# Initialize an empty dataframe to store all data
+all_data_oa <- tibble()
+
+# Loop through files, load and append if it has the 'Verification Code' column
+for(file_path_oa in csv_files_oa) {
+  if(has_verification_code_oa(file_path_oa)) {
+    # Load the CSV file
+    data_oa <- read_csv(file_path_oa, show_col_types = FALSE)
+    
+    # Ensure bruinID.text exists before modifying it
+    if("bruinID.text" %in% colnames(data_oa)) {
+      # Convert to character immediately to prevent mismatches
+      data_oa$bruinID.text <- as.character(data_oa$bruinID.text)
+      
+      # Find the first non-missing value of bruinID.text
+      first_valid_bruinID <- data_oa$bruinID.text[which(!is.na(data_oa$bruinID.text) & data_oa$bruinID.text != "")][1]
+      
+      # If a valid ID is found, fill all rows with it
+      if(!is.na(first_valid_bruinID)) {
+        data_oa$bruinID.text <- first_valid_bruinID
+      }
+    }
+
+    # Convert other relevant columns to character
+    cols_to_convert <- c("textbox_comp_4.text", "textbox_comp_3.text", "textbox_comp.text",
+                         "participant", "textboxAge_2.text", "textbox_comp_2.text", "textboxAge.text", "textboxBirthday.text")
+    
+    for(col in cols_to_convert) {
+      if(col %in% colnames(data_oa)) {
+        data_oa[[col]] <- as.character(data_oa[[col]])
+      }
+    }
+    
+    # Append to the master dataframe
+    all_data_oa <- bind_rows(all_data_oa, data_oa)
+    
+  } else {
+    cat("Skipping file, does not have 'Verification Code' column:", file_path_oa, "\n")
+  }
+}
+
+# At this point, all_data contains all the data from files with 'verification code'
+# You can now work with this combined dataframe
+```
+
+```{r, include=FALSE}
+library(readr)
+library(dplyr)
+
+# Specify the path to your folder
+folder_path_ob <- "/Users/kyliealberts/Desktop/FPIK_4o/FPIK_4bo_data"
+
+# List all CSV files in the folder
+csv_files_ob <- list.files(folder_path_ob, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to check if a CSV file has a specific column
+has_verification_code_ob <- function(file_path_ob) {
+  # Read only the first row to check column names
+  data_ob <- read_csv(file_path_ob, n_max = 1, show_col_types = FALSE)
+  
+  # Check if 'Verification Code' column exists
+  return("subjectResponseQ4" %in% colnames(data_ob))
+}
+
+# Initialize an empty dataframe to store all data
+all_data_ob <- tibble()
+
+# Loop through files, load and append if it has the 'Verification Code' column
+for(file_path_ob in csv_files_ob) {
+  if(has_verification_code_ob(file_path_ob)) {
+    # Load the CSV file
+    data_ob <- read_csv(file_path_ob, show_col_types = FALSE)
+    
+    # Ensure bruinID.text exists before modifying it
+    if("bruinID.text" %in% colnames(data_ob)) {
+      # Convert to character immediately to prevent mismatches
+      data_ob$bruinID.text <- as.character(data_ob$bruinID.text)
+      
+      # Find the first non-missing value of bruinID.text
+      first_valid_bruinID <- data_ob$bruinID.text[which(!is.na(data_ob$bruinID.text) & data_ob$bruinID.text != "")][1]
+      
+      # If a valid ID is found, fill all rows with it
+      if(!is.na(first_valid_bruinID)) {
+        data_ob$bruinID.text <- first_valid_bruinID
+      }
+    }
+
+    # Convert other relevant columns to character
+    cols_to_convert <- c("textbox_comp_4.text", "textbox_comp_3.text", "textbox_comp.text",
+                         "participant", "textboxAge_2.text", "textbox_comp_2.text", "textboxAge.text", "textboxBirthday.text")
+    
+    for(col in cols_to_convert) {
+      if(col %in% colnames(data_ob)) {
+        data_ob[[col]] <- as.character(data_ob[[col]])
+      }
+    }
+    
+    # Append to the master dataframe
+    all_data_ob <- bind_rows(all_data_ob, data_ob)
+    
+  } else {
+    cat("Skipping file, does not have 'Verification Code' column:", file_path_ob, "\n")
+  }
+}
+```
+
+```{r, include=FALSE}
+library(readr)
+library(dplyr)
+
+# Specify the path to your folder
+folder_path_oc <- "/Users/kyliealberts/Desktop/FPIK_4o/FPIK_4co_data"
+
+# List all CSV files in the folder
+csv_files_oc <- list.files(folder_path_oc, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to check if a CSV file has a specific column
+has_verification_code_oc <- function(file_path_oc) {
+  # Read only the first row to check column names
+  data_oc <- read_csv(file_path_oc, n_max = 1, show_col_types = FALSE)
+  
+  # Check if 'Verification Code' column exists
+  return("subjectResponseQ4" %in% colnames(data_oc))
+}
+
+# Initialize an empty dataframe to store all data
+all_data_oc <- tibble()
+
+# Loop through files, load and append if it has the 'Verification Code' column
+for(file_path_oc in csv_files_oc) {
+  if(has_verification_code_oc(file_path_oc)) {
+    # Load the CSV file
+    data_oc <- read_csv(file_path_oc, show_col_types = FALSE)
+    
+    # Ensure bruinID.text exists before modifying it
+    if("bruinID.text" %in% colnames(data_oc)) {
+      # Convert to character immediately to prevent mismatches
+      data_oc$bruinID.text <- as.character(data_oc$bruinID.text)
+      
+      # Find the first non-missing value of bruinID.text
+      first_valid_bruinID <- data_oc$bruinID.text[which(!is.na(data_oc$bruinID.text) & data_oc$bruinID.text != "")][1]
+      
+      # If a valid ID is found, fill all rows with it
+      if(!is.na(first_valid_bruinID)) {
+        data_oc$bruinID.text <- first_valid_bruinID
+      }
+    }
+
+    # Convert other relevant columns to character
+    cols_to_convert <- c("textbox_comp_4.text", "textbox_comp_3.text", "textbox_comp.text",
+                         "participant", "textboxAge_2.text", "textbox_comp_2.text","textboxAge.text","textboxBirthday.text")
+    
+    for(col in cols_to_convert) {
+      if(col %in% colnames(data_oc)) {
+        data_oc[[col]] <- as.character(data_oc[[col]])
+      }
+    }
+    
+    # Append to the master dataframe
+    all_data_oc <- bind_rows(all_data_oc, data_oc)
+    
+  } else {
+    cat("Skipping file, does not have 'Verification Code' column:", file_path_oc, "\n")
+  }
+}
+
+# At this point, all_data contains all the data from files with 'verification code'
+# You can now work with this combined dataframe
+```
+
+
+```{r}
+distract_a <- all_data %>% select(bruinID.text, textboxQuestion2.text)
+cheat_a <- all_data %>% select(bruinID.text, cheat_slider.response)
+all_data <- all_data %>% select(bruinID.text, label_1, price_1, pictures_1, pictures2, pictures3, pictures4, textbox_comp.text, label_r, price_r, pictures_r, Free_button.numClicks, Market_Price_button.numClicks, overpriced_button.numClicks, label_2r, price_2r, pictures_2r,  textbox_comp_2.text, button_selections_1,button_selections_2, label_3r, price_3r, pictures_3r,  textbox_comp_3.text, button_selections_3, label_4r, price_4r, pictures_4r, textbox_comp_4.text, button_selections_4, textboxAge.text, subjectResponseQ4, textboxQuestion2.text, price2, price3, price4, button_selection_final, Question, key_resp_10.keys, Gender, Ethnicity, textboxAge.text,textboxQuestion2.text, cheat_slider.response, slider_2.response, slider.response, slider_online.response)
+```
+
+```{r}
+distract_b <- all_data_b %>% select(bruinID.text, textboxQuestion2.text)
+cheat_b <- all_data_b %>% select(bruinID.text, cheat_slider.response)
+all_data_b <- all_data_b %>% select(bruinID.text, label_1, price_1, pictures_1, pictures2, pictures3, pictures4, textbox_comp.text, label_r, price_r, pictures_r, Free_button.numClicks, Market_Price_button.numClicks, overpriced_button.numClicks, label_2r, price_2r, pictures_2r,  textbox_comp_2.text, button_selections_1, button_selections_2, label_3r, price_3r, pictures_3r,  textbox_comp_3.text, button_selections_3, label_4r, price_4r, pictures_4r, textbox_comp_4.text, button_selections_4, textboxAge.text, subjectResponseQ4, textboxQuestion2.text, button_selection_final, Question, key_resp_10.keys, Gender, Ethnicity, textboxAge.text,textboxQuestion2.text, cheat_slider.response, slider_2.response, slider.response, slider_online.response)
+```
+
+```{r}
+distract_c <- all_data_c %>% select(bruinID.text, textboxQuestion2.text)
+cheat_c <- all_data_c %>% select(bruinID.text, cheat_slider.response)
+all_data_c <- all_data_c %>% select(bruinID.text, label_1, price_1, pictures_1, pictures2, pictures3, pictures4, textbox_comp.text, label_r, price_r, pictures_r, Free_button.numClicks, Market_Price_button.numClicks, overpriced_button.numClicks, label_2r, price_2r, pictures_2r,  textbox_comp_2.text, button_selections_1, button_selections_2, label_3r, price_3r, pictures_3r,  textbox_comp_3.text, button_selections_3, label_4r, price_4r, pictures_4r, button_selections_4, textbox_comp_4.text, textboxAge.text, subjectResponseQ4, textboxQuestion2.text, button_selection_final, Question, key_resp_10.keys, Gender, Ethnicity, textboxAge.text,textboxQuestion2.text, cheat_slider.response, slider_2.response, slider.response, slider_online.response)
+```
+
+```{r}
+distract_oa <- all_data_oa %>% select(bruinID.text, textboxQuestion2.text)
+cheat_oa <- all_data_oa %>% select(bruinID.text, cheat_slider.response)
+all_data_oa <- all_data_oa %>% select(bruinID.text, label_1, price_1, pictures_1, pictures2, pictures3, pictures4, textbox_comp.text, label_r, price_r, pictures_r, Free_button.numClicks, Market_Price_button.numClicks, overpriced_button.numClicks, label_2r, price_2r, pictures_2r,  textbox_comp_2.text, button_selections_1, button_selections_2, label_3r, price_3r, pictures_3r,  textbox_comp_3.text, button_selections_3, label_4r, price_4r, pictures_4r, button_selections_4, textbox_comp_4.text, textboxAge.text, subjectResponseQ4, textboxQuestion2.text, button_selection_final, Question, key_resp_10.keys, Gender, Ethnicity, textboxAge.text,textboxQuestion2.text, cheat_slider.response, slider_2.response, slider.response, slider_online.response)
+```
+
+```{r}
+distract_ob <- all_data_ob %>% select(bruinID.text, textboxQuestion2.text)
+cheat_ob <- all_data_ob %>% select(bruinID.text, cheat_slider.response)
+all_data_ob <- all_data_ob %>% select(bruinID.text, label_1, price_1, pictures_1, pictures2, pictures3, pictures4, textbox_comp.text, label_r, price_r, pictures_r, Free_button.numClicks, Market_Price_button.numClicks, overpriced_button.numClicks, label_2r, price_2r, pictures_2r,  textbox_comp_2.text, button_selections_1, button_selections_2, label_3r, price_3r, pictures_3r,  textbox_comp_3.text, button_selections_3, label_4r, price_4r, pictures_4r, button_selections_4, textbox_comp_4.text, textboxAge.text, subjectResponseQ4, textboxQuestion2.text, button_selection_final, Question, key_resp_10.keys, Gender, Ethnicity, textboxAge.text,textboxQuestion2.text, cheat_slider.response, slider_2.response, slider.response, slider_online.response)
+```
+
+```{r}
+distract_oc <- all_data_oc %>% select(bruinID.text, textboxQuestion2.text)
+cheat_oc <- all_data_oc %>% select(bruinID.text, cheat_slider.response)
+all_data_oc <- all_data_oc %>% select(bruinID.text, label_1, price_1, pictures_1, pictures2, pictures3, pictures4, textbox_comp.text, label_r, price_r, pictures_r, Free_button.numClicks, Market_Price_button.numClicks, overpriced_button.numClicks, label_2r, price_2r, pictures_2r,  textbox_comp_2.text, button_selections_1, button_selections_2, label_3r, price_3r, pictures_3r,  textbox_comp_3.text, button_selections_3, label_4r, price_4r, pictures_4r, button_selections_4, textbox_comp_4.text, textboxAge.text, subjectResponseQ4, textboxQuestion2.text, button_selection_final, Question, key_resp_10.keys, Gender, Ethnicity, textboxAge.text,textboxQuestion2.text, cheat_slider.response, slider_2.response, slider.response, slider_online.response)
+```
+
+```{r}
+cheat_a <- na.omit(cheat_a)
+cheat_b <- na.omit(cheat_b)
+cheat_c <- na.omit(cheat_c)
+cheat_oa <- na.omit(cheat_oa)
+cheat_ob <- na.omit(cheat_ob)
+cheat_oc <- na.omit(cheat_oc)
+distract_a <- na.omit(distract_a)
+distract_b <- na.omit(distract_b)
+distract_c <- na.omit(distract_c)
+distract_oa <- na.omit(distract_oa)
+distract_ob <- na.omit(distract_ob)
+distract_oc <- na.omit(distract_oc)
+write.csv(cheat_oa, "cheat_oa_IP.csv")
+write.csv(cheat_ob, "cheat_ob_IP.csv")
+write.csv(cheat_oc, "cheat_oc_IP.csv")
+
+```
+
+```{r}
+counts_a <- ddply(all_data, .(all_data$bruinID.text), nrow)
+names(counts_a) <- c("ID", "Freq")
+```
+
+
+```{r}
+counts_b <- ddply(all_data_b, .(all_data_b$bruinID.text), nrow)
+names(counts_b) <- c("ID", "Freq")
+```
+
+```{r}
+counts_c <- ddply(all_data_c, .(all_data_c$bruinID.text), nrow)
+names(counts_c) <- c("ID", "Freq")
+```
+
+```{r}
+counts_oa <- ddply(all_data_oa, .(all_data_oa$bruinID.text), nrow)
+names(counts_oa) <- c("ID", "Freq")
+```
+
+```{r}
+counts_ob <- ddply(all_data_ob, .(all_data_ob$bruinID.text), nrow)
+names(counts_ob) <- c("ID", "Freq")
+```
+
+```{r}
+counts_oc <- ddply(all_data_oc, .(all_data_oc$bruinID.text), nrow)
+names(counts_oc) <- c("ID", "Freq")
+```
+
+```{r}
+all_data$study_type <- 'FPIK_a'
+all_data_b$study_type <- 'FPIK_b'
+all_data_c$study_type <- 'FPIK_c'
+
+all_data$agegroup <- 'Young'
+all_data_b$agegroup <- 'Young'
+all_data_c$agegroup <- 'Young'
+```
+
+```{r}
+all_data_oa$study_type <- 'FPIK_oa'
+all_data_ob$study_type <- 'FPIK_ob'
+all_data_oc$study_type <- 'FPIK_oc'
+
+all_data_oa$agegroup <- 'Older'
+all_data_ob$agegroup <- 'Older'
+all_data_oc$agegroup <- 'Older'
+```
+
+```{r}
+
+all_data$textbox_comp_2.text <- as.character(all_data$textbox_comp_2.text)
+all_data_b$textbox_comp_2.text <- as.character(all_data_b$textbox_comp_2.text)
+all_data_c$textbox_comp_2.text <- as.character(all_data_c$textbox_comp_2.text)
+
+all_data$textboxAge.text <- as.numeric(all_data$textboxAge.text)
+all_data_b$textboxAge.text <- as.numeric(all_data_b$textboxAge.text)
+all_data_c$textboxAge.text <- as.numeric(all_data_c$textboxAge.text)
+
+combined_data <- bind_rows(all_data, all_data_b, all_data_c)
+
+counts_combined_data <- ddply(combined_data, .(combined_data$bruinID.text), nrow)
+names(counts_combined_data) <- c("ID", "Freq")
+
+```
+
+```{r}
+
+all_data_oa$textbox_comp_2.text <- as.character(all_data_oa$textbox_comp_2.text)
+all_data_ob$textbox_comp_2.text <- as.character(all_data_ob$textbox_comp_2.text)
+all_data_oc$textbox_comp_2.text <- as.character(all_data_oc$textbox_comp_2.text)
+
+all_data_oa$textboxAge.text <- as.numeric(all_data_oa$textboxAge.text)
+all_data_ob$textboxAge.text <- as.numeric(all_data_ob$textboxAge.text)
+all_data_oc$textboxAge.text <- as.numeric(all_data_oc$textboxAge.text)
+
+combined_data <- bind_rows(combined_data, all_data_oa, all_data_ob, all_data_oc)
+
+counts_combined_data <- ddply(combined_data, .(combined_data$bruinID.text), nrow)
+names(counts_combined_data) <- c("ID", "Freq")
+```
+
+```{r}
+all_data_updated <- combined_data
+```
+
+```{r}
+
+all_data_updated <- all_data_updated %>%
+  mutate(button_response = case_when(
+    !is.na(button_selections_1) & !is.na(button_selections_2) & !is.na(button_selections_3) & !is.na(button_selections_4) ~ 
+      paste(button_selections_1, button_selections_2, button_selections_3, button_selections_4, sep = " "), # All columns have values
+    !is.na(button_selections_1) & !is.na(button_selections_2) & !is.na(button_selections_3) ~ 
+      paste(button_selections_1, button_selections_2, button_selections_3, sep = " "), # First three columns have values
+    !is.na(button_selections_1) & !is.na(button_selections_2) ~ 
+      paste(button_selections_1, button_selections_2, sep = " "), # First two columns have values
+    !is.na(button_selections_1) ~ as.character(button_selections_1), # Only button_selection_1 is not NA
+    !is.na(button_selections_2) ~ as.character(button_selections_2), # Only button_selection_2 is not NA
+    !is.na(button_selections_3) ~ as.character(button_selections_3), # Only button_selection_3 is not NA
+    !is.na(button_selections_4) ~ as.character(button_selections_4), # Only button_selection_4 is not NA
+    TRUE ~ NA_character_ # All are NA, or you can choose another default value
+  ))
+```
+
+```{r}
+all_data_updated <- all_data_updated %>%
+  mutate(all_test_label = case_when(
+    !is.na(label_r) & !is.na(label_2r) & !is.na(label_3r) & !is.na(label_4r) ~ paste(label_r, label_2r, label_3r, label_4r, sep = " "), # All columns have values
+    !is.na(label_r) & !is.na(label_2r) ~ paste(label_r, label_2r, sep = " "), # Only label_r and label_2r are not NA
+    !is.na(label_r) & !is.na(label_3r) ~ paste(label_r, label_3r, sep = " "), # Only label_r and label_3r are not NA
+    !is.na(label_2r) & !is.na(label_3r) ~ paste(label_2r, label_3r, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(label_r) & !is.na(label_4r) ~ paste(label_r, label_4r, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(label_2r) & !is.na(label_4r) ~ paste(label_2r, label_4r, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(label_3r) & !is.na(label_4r) ~ paste(label_3r, label_4r, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(label_r) ~ as.character(label_r), # Only label_r is not NA
+    !is.na(label_2r) ~ as.character(label_2r), # Only label_2r is not NA
+    !is.na(label_3r) ~ as.character(label_3r), # Only label_3r is not NA
+    !is.na(label_4r) ~ as.character(label_4r),
+    TRUE ~ NA_character_ # Catch-all for when all are NA
+  ))
+```
+
+```{r}
+# Assuming 'all_data' is your dataframe
+all_data_updated <- all_data_updated %>%
+  mutate(test_price = case_when(
+    !is.na(price_r) & !is.na(price_2r) & !is.na(price_3r) & !is.na(price_4r) ~ paste(price_r, price_2r, price_3r, price_4r, sep = " "), # All columns have values
+    !is.na(price_r) & !is.na(price_2r) ~ paste(price_r, price_2r, sep = " "), # Only price_r and price_2r are not NA
+    !is.na(price_r) & !is.na(price_3r) ~ paste(price_r, price_3r, sep = " "), # Only price_r and price_3r are not NA
+    !is.na(price_2r) & !is.na(price_3r) ~ paste(price_2r, price_3r, sep = " "), # Only price_2r and price_3r are not NA
+    !is.na(price_r) & !is.na(price_4r) ~ paste(price_r, price_4r, sep = " "), # Only price_2r and price_3r are not NA
+    !is.na(price_2r) & !is.na(price_4r) ~ paste(price_2r, price_4r, sep = " "), # Only price_2r and price_3r are not NA
+    !is.na(price_3r) & !is.na(price_4r) ~ paste(price_3r, price_4r, sep = " "), # Only price_2r and price_3r are not NA
+    !is.na(price_r) ~ as.character(price_r), # Only price_r is not NA
+    !is.na(price_2r) ~ as.character(price_2r), # Only price_2r is not NA
+    !is.na(price_3r) ~ as.character(price_3r), # Only price_3r is not NA
+    !is.na(price_4r) ~ as.character(price_4r), # Only price_3r is not NA
+    TRUE ~ NA_character_ # Catch-all for when all are NA or empty
+  ))
+```
+
+```{r}
+# Assuming 'all_data' is your dataframe
+all_data_updated <- all_data_updated %>%
+  mutate(all_textbox_comp = case_when(
+    !is.na(textbox_comp.text) & !is.na(textbox_comp_2.text) & !is.na(textbox_comp_3.text) & !is.na(textbox_comp_4.text) ~ paste(textbox_comp.text, textbox_comp_2.text, textbox_comp_3.text, textbox_comp_4.text, sep = " "), # All columns have values
+    !is.na(textbox_comp.text) & !is.na(textbox_comp_2.text) ~ paste(textbox_comp.text, textbox_comp_2.text, sep = " "), # Only textbox_comp.text and textbox_comp_2.text are not NA
+    !is.na(textbox_comp.text) & !is.na(textbox_comp_3.text) ~ paste(textbox_comp.text, textbox_comp_3.text, sep = " "), # Only textbox_comp.text and textbox_comp_3.text are not NA
+    !is.na(textbox_comp_2.text) & !is.na(textbox_comp_3.text) ~ paste(textbox_comp_2.text, textbox_comp_3.text, sep = " "), # Only textbox_comp_2.text and textbox_comp_3.text are not NA
+    !is.na(textbox_comp.text) & !is.na(textbox_comp_4.text) ~ paste(textbox_comp.text, textbox_comp_4.text, sep = " "), # Only textbox_comp_2.text and textbox_comp_3.text are not NA
+    !is.na(textbox_comp_2.text) & !is.na(textbox_comp_4.text) ~ paste(textbox_comp_2.text, textbox_comp_4.text, sep = " "), # Only textbox_comp_2.text and textbox_comp_3.text are not NA
+    !is.na(textbox_comp_3.text) & !is.na(textbox_comp_4.text) ~ paste(textbox_comp_3.text, textbox_comp_4.text, sep = " "), # Only textbox_comp_2.text and textbox_comp_3.text are not NA
+    !is.na(textbox_comp.text) ~ as.character(textbox_comp.text), # Only textbox_comp.text is not NA
+    !is.na(textbox_comp_2.text) ~ as.character(textbox_comp_2.text), # Only textbox_comp_2.text is not NA
+    !is.na(textbox_comp_3.text) ~ as.character(textbox_comp_3.text), # Only textbox_comp_3.text is not NA
+    !is.na(textbox_comp_4.text) ~ as.character(textbox_comp_4.text), # Only textbox_comp_3.text is
+    TRUE ~ NA_character_ # Catch-all for when all are NA or empty
+  ))
+```
+
+```{r}
+# Assuming 'all_data' is your dataframe
+all_data_updated <- all_data_updated %>%
+  mutate(all_pictures = case_when(
+    !is.na(pictures_r) & !is.na(pictures_2r) & !is.na(pictures_3r) & !is.na(pictures_4r) ~ paste(pictures_r, pictures_2r, pictures_3r, pictures_4r, sep = " "), # All columns have values
+    !is.na(pictures_r) & !is.na(pictures_2r) ~ paste(pictures_r, pictures_2r, sep = " "), # Only pictures_r and pictures_2r are not NA
+    !is.na(pictures_r) & !is.na(pictures_3r) ~ paste(pictures_r, pictures_3r, sep = " "), # Only pictures_r and pictures_3r are not NA
+    !is.na(pictures_2r) & !is.na(pictures_3r) ~ paste(pictures_2r, pictures_3r, sep = " "), # Only pictures_2r and pictures_3r are not NA
+    !is.na(pictures_r) & !is.na(pictures_4r) ~ paste(pictures_r, pictures_4r, sep = " "), # Only pictures_2r and pictures_3r are not NA
+    !is.na(pictures_2r) & !is.na(pictures_4r) ~ paste(pictures_2r, pictures_4r, sep = " "), # Only pictures_2r and pictures_3r are not NA
+    !is.na(pictures_3r) & !is.na(pictures_4r) ~ paste(pictures_3r, pictures_4r, sep = " "), # Only pictures_2r and pictures_3r are not NA
+    !is.na(pictures_r) ~ as.character(pictures_r), # Only pictures_r is not NA
+    !is.na(pictures_2r) ~ as.character(pictures_2r), # Only pictures_2r is not NA
+    !is.na(pictures_3r) ~ as.character(pictures_3r), # Only pictures_3r is not NA
+    !is.na(pictures_4r) ~ as.character(pictures_4r), # Only pictures_3r is not NA
+    TRUE ~ NA_character_ # Catch-all for when all are NA or empty
+  ))
+```
+
+
+
+```{r}
+counts <- ddply(all_data_updated, .(all_data_updated$bruinID.text), nrow)
+names(counts) <- c("ID", "Freq")
+```
+
+```{r}
+# added code
+numParticipants = length(unique(all_data_updated$bruinID.text))
+
+write.csv(all_data_updated, "FPIK_data214_IP.csv")
+
+all_data_updated <- all_data_updated %>%
+  mutate(agegroup = as.character(agegroup)) %>% 
+  mutate(agegroup = trimws(agegroup))
+
+all_data_updated <- all_data_updated %>%
+  filter(!is.na(agegroup))
+
+
+
+
+#change button_respose column variable names to simplify 
+for (i in 1:numParticipants){ 
+  all_data_updated$button_response[all_data_updated$button_response ==  paste0("[\"overpriced_button_",as.character(i), "\"]")] <- "Overpriced"
+  
+  all_data_updated$button_response[all_data_updated$button_response == paste0("[\"Market_Price_button_",as.character(i), "\"]")] <- "Market Price"
+  
+  all_data_updated$button_response[all_data_updated$button_response == paste0("[\"Free_button_",as.character(i),"\"]")] <- "Free" } 
+
+all_data_updated$button_response <- ifelse(grepl("overpriced",  all_data_updated$button_response), "Overpriced", all_data_updated$button_response)
+
+all_data_updated$button_response <- ifelse(grepl("Market_Price",  all_data_updated$button_response), "Market Price", all_data_updated$button_response)
+
+all_data_updated$button_response <- ifelse(grepl("Free",  all_data_updated$button_response), "Free", all_data_updated$button_response)
+
+all_data_updated$button_response <- ifelse(grepl("Market Price",  all_data_updated$button_response), "Market Price", all_data_updated$button_response)
+
+all_data_updated$button_response <- ifelse(grepl("Overpriced",  all_data_updated$button_response), "Overpriced", all_data_updated$button_response)
+
+all_data_updated$all_test_label <- ifelse(grepl("Free",  all_data_updated$all_test_label), "Free", all_data_updated$all_test_label)
+
+all_data_updated$all_test_label <- ifelse(grepl("Market Price",  all_data_updated$all_test_label), "Market Price", all_data_updated$all_test_label)
+
+all_data_updated$all_test_label <- ifelse(grepl("Overpriced",  all_data_updated$all_test_label), "Overpriced", all_data_updated$all_test_label)
+
+```
+
+
+```{r}
+all_data_updated$bruinID.text <- gsub("[\r\n]", "", all_data_updated$bruinID.text)
+#exclude said they cheated
+
+#older adult that cheated or were distracted
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "67eafb930e75699288e09213")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "CH08")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "FBIK_4bo")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "615e420a23219efe3427a367")
+
+#did not all end in 9 for older adults
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "66e9bdb86f599f239c1ea24e")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "601b75077aa0425330b81e36")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "6526f601bedbae17738408b1")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "66e9bdb86f599f239c1ea24e")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "67e081d172ca42eb59502aef")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "67da8fce2d60b47024c47722")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "678e6eb7170e3a5da7c4ab91")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "680d155019b77b986ff85126")	
+
+#young adults cheat
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806286196")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "606436286")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "406032050")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806286196")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "606436286")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106357309")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "506257497")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "406032050")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106212806")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "706510596")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "406434486")
+
+#young adults distracted
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "706752081")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806266688")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806415565")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "706359904")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "6445340")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "606436286")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106710895")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "306514285")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906174650")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906199603")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106212806")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "006378798")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906199250")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106384384")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "706752081")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806266688")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "306514285")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "606436286")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106710895")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906585604")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106357309")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "506257497")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906495203")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "306444607")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106212806")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "006378798")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906199250")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106384384")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "006162878")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806287134")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "206414192")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "506511380")
+
+#young adults didn't end with a 9
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "6705922")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "606244621")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "6457700")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "605990818")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "506196017")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "106619453")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906222142")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "205968598")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906211172")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906495203")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "406290237")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "6457700")
+
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806166523")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806208392")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "606451272")
+
+#too many participants
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906509403")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "906507022")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "806705942")
+
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "5c33d22b6f160f0001349d6b")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "	
+6475f1d696be138189f68303")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "663557f1ddd96308299e1015")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "6848926c273c09f28311df5c")
+all_data_updated <- subset(all_data_updated, all_data_updated$bruinID.text!= "6475f1d696be138189f68303")
+
+all_data_updated_cheat <- all_data_updated %>% select(bruinID.text, textboxQuestion2.text)
+all_data_updated_cheat <- na.omit(all_data_updated_cheat)
+
+rangeAge = range(na.omit(all_data_updated$textboxAge.text))
+
+meanAge = mean(na.omit(all_data_updated$textboxAge.text))
+
+SDAge = sd(na.omit(all_data_updated$textboxAge.text))
+
+all_data_age <- all_data_updated %>% select(bruinID.text, agegroup, textboxAge.text)
+
+all_data_age_y <- subset(all_data_age, all_data_age$agegroup!= "Young")
+
+age_summary_y <- all_data_age_y %>%
+  group_by(agegroup) %>%  # replace 'agegroup' with your column name if different
+  summarise(
+    minAge  = min(textboxAge.text, na.rm = TRUE),
+    maxAge  = max(textboxAge.text, na.rm = TRUE),
+    meanAge = mean(textboxAge.text, na.rm = TRUE),
+    SDAge   = sd(textboxAge.text, na.rm = TRUE)
+  )
+
+all_data_age_o <- subset(all_data_age, all_data_age$agegroup!= "Older")
+
+age_summary_o <- all_data_age_o %>%
+  group_by(agegroup) %>%  # replace 'agegroup' with your column name if different
+  summarise(
+    minAge  = min(textboxAge.text, na.rm = TRUE),
+    maxAge  = max(textboxAge.text, na.rm = TRUE),
+    meanAge = mean(textboxAge.text, na.rm = TRUE),
+    SDAge   = sd(textboxAge.text, na.rm = TRUE)
+  )
+
+counts_updated_all <- ddply(all_data_updated, .(all_data_updated$bruinID.text, all_data_updated$study_type), nrow)
+names(counts_updated_all) <- c("ID", "study_type", "Freq")
+
+hm_a <- subset(counts_updated_all, counts_updated_all$study_type == "FPIK_a")
+hm_b <- subset(counts_updated_all, counts_updated_all$study_type == "FPIK_b")
+hm_c <- subset(counts_updated_all, counts_updated_all$study_type == "FPIK_c")
+
+hm_oa <- subset(counts_updated_all, counts_updated_all$study_type == "FPIK_oa")
+hm_ob <- subset(counts_updated_all, counts_updated_all$study_type == "FPIK_ob")
+hm_oc <- subset(counts_updated_all, counts_updated_all$study_type == "FPIK_oc")
+
+
+```
+
+
+
+```{r}
+age_ <-all_data_updated %>% select(agegroup, textboxAge.text)
+age_ <- drop_na(age_)
+
+age_$agegroup <- as.factor(age_$agegroup)
+
+age_$agegroup <- as.character(age_$agegroup)
+age_$agegroup <- trimws(age_$agegroup)  # Remove extra spaces
+
+# Convert back to factor to ensure proper grouping
+age_$agegroup <- factor(age_$agegroup, levels = c("Young", "Older"))
+
+write.csv(age_, "age_fpik_data_IP.csv")
+
+age_group_stats <- aggregate(as.numeric(textboxAge.text) ~ agegroup, data = age_, 
+                             FUN = function(x) c(range = paste(range(x, na.rm = TRUE), collapse = " - "),
+                                                 mean = mean(x, na.rm = TRUE),
+                                                 sd   = sd(x, na.rm = TRUE),
+count = sum(!is.na(x)) ))
+
+
+age_group_stats
+```
+
+
+```{r}
+all_data_updated <- all_data_updated %>%
+  mutate(all_textbox_comp = as.numeric(str_replace_all(all_textbox_comp, "[^0-9.-]", "")))
+
+#accuracy code
+all_data_updated$results = ifelse(all_data_updated$button_response == all_data_updated$all_test_label, '1', 
+                      ifelse(all_data_updated$button_response != all_data_updated$all_test_label, '0', 'None'))
+```
+
+```{r}
+#changes the curiosity so that it is in the same row of the other things
+all_data_curiosity <- all_data_updated %>% select(bruinID.text, pictures_1, pictures2, pictures3, pictures4, slider_2.response)
+
+all_data_curiosity <- all_data_curiosity %>%
+  mutate(all_pictures = coalesce(pictures_1, pictures2, pictures3, pictures4))
+
+all_data_curiosity <- all_data_curiosity %>% select(bruinID.text, slider_2.response, all_pictures)
+
+all_data_curiosity <- na.omit(all_data_curiosity)
+
+all_data_updated <- all_data_updated %>%
+  select(-slider_2.response)
+
+all_data_updated <- left_join(all_data_updated, all_data_curiosity, by = c("bruinID.text", "all_pictures"))
+```
+
+
+```{r}
+#example code, fertilizer would b all_test_label, yield would be accuracy
+all_data_updated$results <- as.numeric(as.character(all_data_updated$results))
+one.way <- aov(results ~ all_test_label, data = all_data_updated)
+
+summary(one.way)
+
+with(all_data_updated, pairwise.t.test(results, all_test_label, p.adj="bonferroni", paired=F))
+```
+
+```{r}
+#ggplot code 
+#ggplot code 
+
+
+# find no bruinID columns 
+
+#############################
+
+##Add a code here that makes it so the dataframe all_data_updated only has the columns: bruinID.text, button_response, all_test_label, results 
+
+all_data_figure <- all_data_updated %>% select(bruinID.text, button_response, all_test_label, results, agegroup)
+
+#then do this code below
+all_data_figure = na.omit(all_data_figure)
+
+all_data_figure$all_test_label <- trimws(all_data_figure$all_test_label)
+
+all_data_figure <- all_data_figure[!(is.na(all_data_figure$all_test_label) | all_data_figure$all_test_label == ""), ]
+
+all_data_figure_check4 <- all_data_figure
+
+all_data_figure$results <- as.numeric(all_data_figure$results)
+
+
+
+all_data_figure1<-all_data_figure%>%
+  group_by(all_test_label, agegroup) %>%
+  summarise_at(vars(results), list(results = mean)) %>%
+  as.data.frame()
+
+all_data_csv <- all_data_figure1
+
+
+
+# figure1$results <- as.numeric(as.character(figure1$results)) 
+
+all_data_figure1 <- all_data_figure1 %>%
+  select(all_test_label, results, agegroup)
+
+all_data_figure1$results <- as.numeric(all_data_figure1$results)
+
+all_data_figure1 <- all_data_figure1 %>%
+  mutate(all_test_label = as.character(all_test_label))
+
+all_data_figure1<-all_data_figure1%>%
+  group_by(all_test_label, agegroup) %>%
+  summarise_at(vars(results), list(results = mean)) %>%
+  as.data.frame()
+
+
+
+
+#figure_average<- merge(average, stand, by = "all_test_label") 
+
+#plotting graph 
+
+figure_test <- ggplot(data = all_data_figure1, mapping = aes(x = all_test_label, y= results, fill - agegroup)) + geom_bar(stat="summary", fun='mean', fill='#A4A4A4', color="darkred") 
+
+figure_test
+
+```
+
+
+
+
+
+```{r}
+#adding addition info
+all_data_final_ques <- all_data_updated %>% select(bruinID.text, button_selection_final, Question, agegroup, slider_2.response)
+all_data_final_ques<- all_data_final_ques[!is.na(all_data_final_ques$button_selection_final), ]
+write.csv(all_data_final_ques, file= "all_data_final_queslong_cur.csv")
+# Remove list artifacts from button_selection_final before pivoting
+all_data_final_ques <- all_data_final_ques %>%
+  mutate(button_selection_final = sapply(button_selection_final, toString))
+
+# Pivot the data wider
+wide_data <- all_data_final_ques %>%
+  pivot_wider(
+    names_from = Question, 
+    values_from = button_selection_final,
+    values_fn = ~ paste(unique(.), collapse = ", ")  # Ensures unique responses per ID
+  )
+
+write.csv(wide_data, file= "all_data_final_ques_cur.csv")
+all_data_final_ques <- read.csv("/Users/kyliealberts/FPIK_/all_data_final_ques_cur_3.csv")
+
+all_data_final_ques <- all_data_final_ques %>% select(bruinID.text, agegroup, attention_cat, price_easy_remember, cat_easy_remember, Price_hard_remember, cat_hard_remember)
+
+counts_o <- ddply(
+  all_data_final_ques,
+  .(bruinID.text, attention_cat, price_easy_remember, cat_easy_remember, Price_hard_remember, cat_hard_remember),
+  nrow
+)
+names(counts_o) <- c("ID", "attention_cat","price_easy_remember", "cat_easy_remember","Price_hard_remember" ,"cat_hard_remember", "Freq")
+
+attention_cat <- data.frame(table(counts_o$attention_cat))
+price_easy <- data.frame(table(counts_o$price_easy_remember))
+cat_easy <- data.frame(table(counts_o$cat_easy_remember))
+price_hard <- data.frame(table(counts_o$Price_hard_remember))
+cat_hard <- data.frame(table(counts_o$cat_hard_remember))
+
+all_data_final_ques <- all_data_final_ques %>%
+  mutate(attention_cat = case_when(
+    attention_cat == "[\"market_final\"]" ~ "Market Price",
+    attention_cat == "[\"Overpriced_final\"]" ~ "Overpriced",
+    attention_cat == "[\"free_final\"]" ~ "Free",
+    attention_cat == "[\"No_final\"]" ~ "No Preference",
+    TRUE ~ attention_cat  # Keeps all other values unchanged
+  ))
+
+all_data_final_ques <- all_data_final_ques %>%
+  mutate(price_easy_remember = case_when(
+    price_easy_remember == "[\"market_final\"]" ~ "Market Price",
+    price_easy_remember == "[\"Overpriced_final\"]" ~ "Overpriced",
+    price_easy_remember == "[\"free_final\"]" ~ "Free",
+    price_easy_remember == "[\"No_final\"]" ~ "No Preference",
+    TRUE ~ price_easy_remember  # Keeps all other values unchanged
+  ))
+
+all_data_final_ques <- all_data_final_ques %>%
+  mutate(cat_easy_remember = case_when(
+    cat_easy_remember == "[\"market_final\"]" ~ "Market Price",
+    cat_easy_remember == "[\"Overpriced_final\"]" ~ "Overpriced",
+    cat_easy_remember == "[\"free_final\"]" ~ "Free",
+    cat_easy_remember == "[\"No_final\"]" ~ "No Preference",
+    TRUE ~ cat_easy_remember  # Keeps all other values unchanged
+  ))
+
+all_data_final_ques <- all_data_final_ques %>%
+  mutate(Price_hard_remember = case_when(
+    Price_hard_remember == "[\"market_final\"]" ~ "Market Price",
+    Price_hard_remember == "[\"Overpriced_final\"]" ~ "Overpriced",
+    Price_hard_remember == "[\"free_final\"]" ~ "Free",
+    Price_hard_remember == "[\"No_final\"]" ~ "No Preference",
+    TRUE ~ Price_hard_remember  # Keeps all other values unchanged
+  ))
+
+all_data_final_ques <- all_data_final_ques %>%
+  mutate(cat_hard_remember  = case_when(
+    cat_hard_remember  == "[\"market_final\"]" ~ "Market Price",
+    cat_hard_remember  == "[\"Overpriced_final\"]" ~ "Overpriced",
+    cat_hard_remember  == "[\"free_final\"]" ~ "Free",
+    cat_hard_remember  == "[\"No_final\"]" ~ "No Preference",
+    TRUE ~ cat_hard_remember   # Keeps all other values unchanged
+  ))
+
+all_data_final_ques$attention_cat <- factor(all_data_final_ques$attention_cat, 
+                                            levels = c("Free", "Market Price", "Overpriced", "No Preference"))
+
+all_data_final_ques <- drop_na(all_data_final_ques)
+
+write.csv(all_data_final_ques, "all_data_fin_ques_jam_cur.csv")
+
+agg_tbl <- all_data_final_ques %>% dplyr::group_by(agegroup, attention_cat) %>% 
+  dplyr::summarise(total_count=n(),
+            .groups = 'drop')
+agg_tbl_pr <- all_data_final_ques %>% dplyr::group_by(agegroup, price_easy_remember) %>% 
+  dplyr::summarise(total_count=n(),
+            .groups = 'drop')
+agg_tbl_cat <- all_data_final_ques %>% dplyr::group_by(agegroup, cat_easy_remember) %>% 
+  dplyr::summarise(total_count=n(),
+            .groups = 'drop')
+agg_tbl_prh <- all_data_final_ques %>% dplyr::group_by(agegroup, Price_hard_remember) %>% 
+  dplyr::summarise(total_count=n(),
+            .groups = 'drop')
+agg_tbl_cath <- all_data_final_ques %>% dplyr::group_by(agegroup, cat_hard_remember) %>% 
+  dplyr::summarise(total_count=n(),
+            .groups = 'drop')
+
+
+ggplot(all_data_final_ques, aes(x = attention_cat, fill = agegroup)) +
+  geom_bar(position = position_dodge(), color = "black") +
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x = " ", y = "Count", fill = "Age Group") +
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent'),
+    legend.direction = "horizontal",
+    legend.position = c(0.3, 0.8),legend.title = element_blank(),
+    axis.line.x = element_line(color = "black", size = 0.3),
+    axis.line.y = element_line(color = "black", size = 0.3),
+    axis.ticks.x = element_blank()
+  ) 
+```
+
+```{r}
+all_data_final_ques$price_easy_remember <- factor(all_data_final_ques$price_easy_remember, 
+                                            levels = c("Free", "Market Price", "Overpriced", "No Preference"))
+ggplot(all_data_final_ques, aes(x = price_easy_remember, fill = agegroup)) +
+  geom_bar(position = position_dodge(), color = "black") +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  labs(x = " ", y = "Count") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.4, 0.8), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())
+```
+```{r}
+all_data_final_ques <- drop_na(all_data_final_ques)
+all_data_final_ques <- all_data_final_ques %>% drop_na(cat_easy_remember)
+all_data_final_ques$cat_easy_remember <- factor(all_data_final_ques$cat_easy_remember, 
+                                            levels = c("Free", "Market Price", "Overpriced", "No Preference"))
+ggplot(all_data_final_ques, aes(x = cat_easy_remember, fill = agegroup)) +
+  geom_bar(position = position_dodge(), color = "black") +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  labs(x = " ", y = "Count") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.3, 0.8), legend.title = element_blank(), axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())
+```
+```{r}
+all_data_final_ques$Price_hard_remember <- factor(all_data_final_ques$Price_hard_remember, 
+                                            levels = c("Free", "Market Price", "Overpriced", "No Preference"))
+ggplot(all_data_final_ques, aes(x = Price_hard_remember, fill = agegroup)) +
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  geom_bar(position = position_dodge(), color = "black") +
+  labs(x = " ", y = "Count") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.4, 0.9), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank()) +ylim(0, 15)
+```
+```{r}
+all_data_final_ques$cat_hard_remember <- factor(all_data_final_ques$cat_hard_remember, 
+                                            levels = c("Free", "Market Price", "Overpriced", "No Preference"))
+ggplot(all_data_final_ques, aes(x = cat_hard_remember, fill = agegroup)) +
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  geom_bar(position = position_dodge(), color = "black") +
+  labs(x = " ", y = "Count") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.6, 0.8), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())
+```
+
+```{r}
+stand_button <- data.frame(
+  all_test_label=c("Free", "Free", "Market Price", "Market Price", "Overpriced", "Overpriced"),
+  agegroup = c("Older", "Young", "Older", "Young", "Older", "Young"),
+  sd=c(.02, .0197, .0192, .0198, .0129, .0162)
+)
+
+all_data_figure1<- merge(all_data_figure1, stand_button, by=c("all_test_label", "agegroup"))
+
+all_data_figure1$agegroup <- factor(all_data_figure1$agegroup, levels = c("Young", "Older"))
+
+figure_button_bw_y <- ggplot(data=all_data_figure1, aes(x=all_test_label, y= results, fill = agegroup)) +
+geom_bar(stat="identity", position=position_dodge(), col = "black")+ 
+  scale_fill_manual(values=c("white", "black")) +
+  guides(fill = guide_legend(reverse = FALSE)) +
+  labs(x = "Category Label", y = "Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.18, 0.8), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+  
+  #geom_signif(comparisons=list(c("Free", "Overpriced")), annotations="***",
+  #            y_position = .98, tip_length = 0, vjust=0.4) + geom_signif(comparisons=list(c("Market Price", "Overpriced")), annotations="***",
+ #             y_position = .85, tip_length = 0, vjust=0.4) +
+#theme_classic() +
+  geom_errorbar(aes(ymin=results-sd, ymax=results+sd), width=0.2, colour="gray27", position=position_dodge(.9)) +
+  ylim(0,1)
+
+figure_button_bw_y
+```
+
+```{r}
+tab <- table(all_data_final_ques$price_easy_remember)
+res <- chisq.test(tab)
+res
+res$stdres
+```
+```{r}
+tab_cat_e <- table(all_data_final_ques$cat_easy_remember[!is.na(all_data_final_ques$cat_easy_remember) & all_data_final_ques$cat_easy_remember != ""])
+
+res_cat_e <- chisq.test(tab_cat_e)
+res_cat_e
+res_cat_e$stdres
+```
+```{r}
+tab_cat_at <- table(all_data_final_ques$attention_cat)
+res_cat_at <- chisq.test(tab_cat_at)
+res_cat_at
+res_cat_at$stdres
+```
+```{r}
+tab_price_har <- table(all_data_final_ques$Price_hard_remember)
+res_price_har <- chisq.test(tab_price_har)
+res_price_har
+res_price_har$stdres
+```
+```{r}
+tab_cat_har <- table(all_data_final_ques$cat_hard_remember)
+res_cat_har <- chisq.test(tab_cat_har)
+res_cat_har
+res_cat_har$stdres
+```
+
+
+
+
+```{r}
+#trait curiosity
+data_trait_cur <- all_data_updated %>% select(bruinID.text, key_resp_10.keys)
+
+data_trait_cur = na.omit(data_trait_cur)
+
+data_trait_cur$key_resp_10.keys <- as.numeric(data_trait_cur$key_resp_10.keys)
+
+
+
+library(dplyr)
+
+data_trait_cur<-data_trait_cur%>%
+  group_by(bruinID.text) %>%
+  summarise_at(vars(key_resp_10.keys), list(key_resp_10.keys = sum)) %>%
+  as.data.frame()
+
+names(data_trait_cur)[names(data_trait_cur) == "key_resp_10.keys"] <- "trait_cur"
+
+all_data_updated<- merge(all_data_updated, data_trait_cur, by=c("bruinID.text"))
+
+
+```
+
+
+```{r}
+#want to look into actual prices
+#accuracy code for priceresults
+all_data_updated$priceresults = ifelse(all_data_updated$all_textbox_comp == all_data_updated$test_price, '1',
+                      ifelse(all_data_updated$all_textbox_comp != all_data_updated$test_price, '0', 'None'))
+
+all_data_figure2 <- all_data_updated %>% select(bruinID.text, all_test_label, priceresults, agegroup, slider_2.response, trait_cur)
+
+all_data_figure2 = na.omit(all_data_figure2)
+
+all_data_figure2$priceresults <- as.numeric(all_data_figure2$priceresults)
+
+all_data_check <- all_data_figure2
+
+all_data_check2 <- all_data_updated %>% select(bruinID.text, all_test_label, test_price, all_textbox_comp, priceresults, button_response, results, agegroup, slider_2.response, all_pictures, trait_cur)
+
+all_data_check_withNA <- all_data_check2
+
+
+all_data_check2 = na.omit(all_data_check2)
+
+counts_updated_all_check <- ddply(all_data_check2, .(all_data_check2$bruinID.text), nrow)
+names(counts_updated_all_check) <- c("ID", "Freq")
+
+write.csv(all_data_check2, file= "all_data_fall_24_cur.csv")
+
+
+all_data_figure2<-all_data_figure2%>%
+  group_by(all_test_label, agegroup) %>%
+  summarise_at(vars(priceresults), list(priceresults = mean)) %>%
+  as.data.frame()
+
+all_data_button_results<-all_data_check2%>%
+  group_by(bruinID.text, all_test_label, agegroup) %>%
+  summarise_at(vars(results), list(results = mean)) %>%
+  as.data.frame()
+
+write.csv(all_data_button_results, file= "all_data_button_results_fall24_cur.csv")
+
+all_data_csv_ep <- all_data_figure2
+all_data_check2$priceresults <- as.numeric(all_data_check2$priceresults)
+
+all_data_price_results<-all_data_check2%>%
+  group_by(bruinID.text, all_test_label, agegroup) %>%
+  summarise_at(vars(priceresults), list(priceresults = mean)) %>%
+  as.data.frame()
+
+write.csv(all_data_price_results, file= "all_data_price_results_fall24_cur.csv")
+
+#write.csv(all_data_csv_ep, file= "all_data_csv_ep.csv")
+
+figure_test2 <- ggplot(data = all_data_figure2, mapping = aes(x = all_test_label, y= priceresults)) + geom_bar(stat="summary", fun='mean', fill='#A4A4A4', color="darkred") 
+
+figure_test2
+```
+
+```{r}
+shop_ <- all_data_updated %>% select(bruinID.text, agegroup, slider.response)
+shop_ <- drop_na(shop_)
+
+shop_online <- all_data_updated %>% select(bruinID.text, agegroup,slider_online.response)
+shop_online <- drop_na(shop_online)
+
+shop_all <- merge(shop_, shop_online, by=c("bruinID.text", "agegroup")) 
+
+shop_all$all_shopping <- shop_all$slider.response + shop_all$slider_online.response
+
+all_data_check2<- merge(all_data_check2, shop_all, by=c("bruinID.text", "agegroup"))
+```
+
+
+```{r}
+#lme of the data with curiosity
+all_data_check2 <- all_data_check2 %>%
+  mutate(
+    cur_z = as.numeric(scale(slider_2.response))
+  )
+
+all_data_check2 <- all_data_check2 %>%
+  mutate(
+    trait_cur_z = as.numeric(scale(trait_cur))
+  )
+
+
+all_data_check2 <- all_data_check2 %>%
+  mutate(across(c(all_test_label, test_price, all_data_comp, priceresults, button_response, results, agegroup, slider_2.response, all_pictures, cur_z, trait_cur, trait_cur_z), as.factor))
+
+curiosity_price_results <- glmer(
+  priceresults ~ all_test_label * agegroup*cur_z + trait_cur_z +
+    (1 | bruinID.text) + (1 | all_pictures),
+  data = all_data_check2,
+  family = binomial,
+  control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+)
+
+summary(curiosity_price_results)
+
+
+
+library(car)
+vif(curiosity_price_results)
+cor.test(all_data_check2$cur_z, all_data_check2$trait_cur)
+
+curiosity_price_results_test <- glmer(
+  priceresults ~ all_shopping*agegroup +
+    (1 | bruinID.text) + (1 | all_pictures),
+  data = all_data_check2,
+  family = binomial,
+  control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+)
+
+summary(curiosity_price_results_test)
+
+# curiosity_price_results_trait <- glmer(
+#   priceresults ~ all_test_label * agegroup*cur_z + trait_cur_z*agegroup +
+#     (1 | bruinID.text) + (1 | all_pictures),
+#   data = all_data_check2,
+#   family = binomial,
+#   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+# )
+# 
+# summary(curiosity_price_results_trait)
+
+
+# curiosity_price_results_tc <- glmer(
+#   priceresults ~ all_test_label * agegroup*cur_z + trait_cur*agegroup +
+#     (1 | bruinID.text) + (1 | all_pictures),
+#   data = all_data_check2,
+#   family = binomial,
+#   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+# )
+# 
+# summary(curiosity_price_results_tc)
+# anova(curiosity_price_results, curiosity_price_results_tc)
+```
+```{r}
+library(emmeans)
+emmeans_curiosity_price_results <- emmeans(curiosity_price_results, ~ all_test_label)
+pairs(emmeans_curiosity_price_results)
+```
+
+```{r}
+library(emmeans)
+emmeans_curiosity_price_results <- emmeans(curiosity_price_results, ~ all_test_label*agegroup)
+pairs(emmeans_curiosity_price_results)
+```
+
+```{r}
+emmeans_curiosity_price_results_cur <- emmeans(curiosity_price_results, ~ all_test_label*agegroup*cur_z)
+pairs(emmeans_curiosity_price_results_cur)
+```
+```{r}
+curiosity_price_results_slopes <- emtrends(curiosity_price_results, ~ all_test_label * agegroup, var = "cur_z")
+summary(curiosity_price_results_slopes)
+pairs(curiosity_price_results_slopes, by = "agegroup")
+pairs(curiosity_price_results_slopes, by = "all_test_label")
+```
+
+
+
+```{r}
+
+curiosity_button_results <- glmer(
+  results ~ all_test_label * agegroup*cur_z+ trait_cur_z +
+    (1 | bruinID.text) + (1 | all_pictures),
+  data = all_data_check2,
+  family = binomial,
+  control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+)
+
+summary(curiosity_button_results)
+
+curiosity_button_results_test <- glmer(
+  results ~ all_shopping*agegroup +
+    (1 | bruinID.text) + (1 | all_pictures),
+  data = all_data_check2,
+  family = binomial,
+  control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+)
+
+summary(curiosity_button_results_test)
+
+# curiosity_button_results_tc <- glmer(
+#   results ~ all_test_label * agegroup*cur_z+ trait_cur*agegroup +
+#     (1 | bruinID.text) + (1 | all_pictures),
+#   data = all_data_check2,
+#   family = binomial,
+#   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+# )
+# 
+# summary(curiosity_button_results_tc)
+# 
+# anova(curiosity_button_results, curiosity_button_results_tc)
+```
+
+```{r}
+emmeans_curiosity_button_results <- emmeans(curiosity_button_results, ~ all_test_label)
+pairs(emmeans_curiosity_button_results)
+```
+
+
+```{r}
+emmeans_curiosity_button_results <- emmeans(curiosity_button_results, ~ all_test_label*agegroup)
+pairs(emmeans_curiosity_button_results)
+```
+
+
+```{r}
+emmeans_curiosity_button_results <- emmeans(curiosity_button_results, ~ all_test_label*agegroup*cur_z)
+pairs(emmeans_curiosity_button_results)
+```
+
+```{r}
+curiosity_button_results_slopes <- emtrends(curiosity_button_results, ~ all_test_label * agegroup, var = "cur_z")
+summary(curiosity_button_results_slopes)
+pairs(curiosity_button_results_slopes, by = "agegroup")
+pairs(curiosity_button_results_slopes, by = "all_test_label")
+```
+
+
+```{r}
+#anovas check button 
+anova_twoway_button <- aov(results ~ agegroup * all_test_label, data = all_data_check2)
+summary(anova_twoway_button)
+
+anova_twoway_priceexact <- aov(priceresults ~ agegroup * all_test_label, data = all_data_check2)
+
+
+summary(anova_twoway_priceexact)
+
+```
+
+```{r}
+all_data_check_3 <- all_data_figure2
+all_data_figure2$all_test_label <- ifelse(grepl("Free",  all_data_figure2$all_test_label), "Free", all_data_figure2$all_test_label)
+
+all_data_figure2$all_test_label <- ifelse(grepl("Market Price",  all_data_figure2$all_test_label), "Market Price", all_data_figure2$all_test_label)
+
+all_data_figure2$all_test_label <- ifelse(grepl("Overpriced",  all_data_figure2$all_test_label), "Overpriced", all_data_figure2$all_test_label)
+
+#write.csv(all_data_figure2, file= "all_data_fall_24_price.csv")
+
+all_data_figure2<-all_data_figure2%>%
+  group_by(all_test_label, agegroup) %>%
+  summarise_at(vars(priceresults), list(priceresults = mean)) %>%
+  as.data.frame()
+
+stand_exactprice <- data.frame(
+  all_test_label=c("Free", "Free", "Market Price", "Market Price", "Overpriced", "Overpriced"),
+  agegroup = c("Older", "Young", "Older", "Young", "Older", "Young"),
+  sd=c(.0197, .0177, .0198, .0189, .0185, .0181)
+)
+
+
+all_data_figure2<- merge(all_data_figure2, stand_exactprice, by=c("all_test_label", "agegroup"))
+
+all_data_figure2$agegroup <- factor(all_data_figure2$agegroup, levels = c("Young", "Older"))
+
+figure_exactprice_bw_y <- ggplot(data=all_data_figure2, aes(x=all_test_label, y= priceresults, fill = agegroup)) +
+geom_bar(stat="identity", position=position_dodge(), col = "black")+
+  scale_fill_manual(values=c("white", "black")) +
+  guides(fill = guide_legend(reverse = FALSE)) +
+  labs(x = "Price", y = "Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.6, 0.8), legend.title = element_blank(), axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())  +
+#theme_classic() +
+  geom_errorbar(aes(ymin=priceresults-sd, ymax=priceresults+sd), width=0.2, colour="gray27", position=position_dodge(.9)) +
+  ylim(0,.75)
+
+figure_exactprice_bw_y
+```
+```{r}
+#make code for them being 10 cents off and see if there is better accuracy for that
+all_data_updated$all_textbox_comp <- as.numeric(as.character(all_data_updated$all_textbox_comp))
+all_data_updated$test_price <- as.numeric(as.character(all_data_updated$test_price))
+
+# Select necessary columns
+all_data_difference <- all_data_updated %>%
+  select(bruinID.text, test_price, all_textbox_comp, all_test_label, agegroup)
+
+# Remove rows with NA values
+all_data_difference <- na.omit(all_data_difference)
+
+# Calculate the difference
+all_data_difference$difference <- all_data_difference$all_textbox_comp - all_data_difference$test_price
+
+all_data_difference$difference <- abs(all_data_difference$difference)
+
+all_data_difference <- all_data_difference %>%
+  mutate(resultsten = ifelse(difference <= 0.1, 1, 0))
+
+all_data_resultsten <- all_data_difference
+
+all_data_resultsten <- all_data_resultsten %>% select(bruinID.text, all_test_label, resultsten, agegroup)
+
+all_data_resultsten = na.omit(all_data_resultsten)
+
+all_data_resultsten$resultsten <- as.numeric(all_data_resultsten$resultsten)
+
+all_data_resultsten <-all_data_resultsten%>%
+  group_by(bruinID.text, all_test_label, agegroup) %>%
+  summarise_at(vars(resultsten), list(resultsten = mean)) %>%
+  as.data.frame()
+
+all_data_resultstencsv <- all_data_resultsten
+
+write.csv(all_data_resultstencsv, file= "all_data_resultstencsv_cur.csv")
+
+```
+
+```{r}
+all_data_difference <- all_data_difference %>%
+  mutate(resultsone = ifelse(difference <= 1, 1, 0))
+
+all_data_resultsone <- all_data_difference
+
+all_data_resultsone <- all_data_resultsone %>% select(bruinID.text, all_test_label, resultsone, agegroup)
+
+all_data_resultsone = na.omit(all_data_resultsone)
+
+all_data_resultsone$resultsone <- as.numeric(all_data_resultsone$resultsone)
+
+all_data_resultsone <-all_data_resultsone%>%
+  group_by(bruinID.text, all_test_label, agegroup) %>%
+  summarise_at(vars(resultsone), list(resultsone = mean)) %>%
+  as.data.frame()
+
+all_data_resultsonecsv <- all_data_resultsone
+
+write.csv(all_data_resultsonecsv, file= "all_data_resultsonecsv_cur.csv")
+```
+
+
+```{r}
+all_data_resultsone_figure<-all_data_resultsone%>%
+  group_by(all_test_label, agegroup) %>%
+  summarise_at(vars(resultsone), list(resultsone = mean)) %>%
+  as.data.frame()
+
+stand_resultsone <- data.frame(
+  all_test_label=c("Free", "Market Price", "Overpriced"),
+  sd=c(.0279, .0262, .0357)
+)
+
+all_data_resultsone_figure<- merge(all_data_resultsone_figure, stand_resultsone, by=c("all_test_label"))
+
+figure_resultsone_bw_y <- ggplot(data=all_data_resultsone_figure, aes(x=all_test_label, y= resultsone, fill = agegroup)) +
+geom_bar(stat="identity", position=position_dodge(), col = "black")+
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x = "Price", y = "Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.7, 0.8), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+  
+  #geom_signif(comparisons=list(c("Free", "Overpriced")), annotations="*",
+ #             y_position = .98, tip_length = 0, vjust=0.4) + geom_signif(comparisons=list(c("Market Price", "Overpriced")), annotations="**",
+        #      y_position = .85, tip_length = 0, vjust=0.4) +
+#theme_classic() +
+  geom_errorbar(aes(ymin=resultsone-sd, ymax=resultsone+sd), width=0.2, colour="gray27", position=position_dodge(.9)) +
+  ylim(0,1)
+
+figure_resultsone_bw_y
+```
+
+```{r}
+# looking at list
+
+# Ensure label_r is a character column
+all_data_updated$label_r <- as.character(all_data_updated$label_r)
+all_data_updated$label_2r <- as.character(all_data_updated$label_2r)
+all_data_updated$label_3r <- as.character(all_data_updated$label_3r)
+all_data_updated$label_4r <- as.character(all_data_updated$label_4r)
+
+
+
+# Append list values based on conditions
+all_data_updated$list <- ifelse(nchar(trimws(all_data_updated$label_r)) > 0, "list1", NA)
+all_data_updated$list2 <- ifelse(nchar(trimws(all_data_updated$label_2r)) > 0, "list2", NA)
+all_data_updated$list3 <- ifelse(nchar(trimws(all_data_updated$label_3r)) > 0, "list3", NA)
+all_data_updated$list4 <- ifelse(nchar(trimws(all_data_updated$label_4r)) > 0, "list4", NA)
+
+all_data_updated <- all_data_updated %>%
+  mutate(all_list = case_when(
+    !is.na(list) & !is.na(list2) & !is.na(list3) & !is.na(list4) ~ paste(list, list2, list3, list4, sep = " "), # All columns have values
+    !is.na(list) & !is.na(list2) ~ paste(list, list2, sep = " "), # Only label_r and label_2r are not NA
+    !is.na(list) & !is.na(list3) ~ paste(list, list3, sep = " "), # Only label_r and label_3r are not NA
+    !is.na(list2) & !is.na(list3) ~ paste(list2, list3, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(list) & !is.na(list4) ~ paste(list, list4, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(list2) & !is.na(list4) ~ paste(list2, list4, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(list3) & !is.na(list4) ~ paste(list3, list4, sep = " "), # Only label_2r and label_3r are not NA
+    !is.na(list) ~ as.character(list), # Only label_r is not NA
+    !is.na(list2) ~ as.character(list2), # Only label_2r is not NA
+    !is.na(list3) ~ as.character(list3), # Only label_3r is not NA
+    !is.na(list4) ~ as.character(list4),
+    TRUE ~ NA_character_ # Catch-all for when all are NA
+  ))
+
+all_data_list <- all_data_updated %>% select(bruinID.text, button_response, all_test_label, priceresults, results, agegroup, all_list, all_pictures)
+
+#then do this code below
+all_data_list = na.omit(all_data_list)
+
+list_test<- merge(all_data_check2, all_data_list, by = c("bruinID.text", "button_response", "all_test_label", "priceresults", "results", "agegroup", "all_pictures")) 
+
+write.csv(all_data_list, file= "all_data_list_cur.csv")
+
+```
+
+```{r}
+# curiosity_price_results_list <- glmer(
+#   priceresults ~ all_test_label * agegroup*cur_z*all_list+ trait_cur_z +
+#     (1 | bruinID.text) + (1 | all_pictures),
+#   data = list_test,
+#   family = binomial,
+#   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))
+# )
+# 
+# summary(curiosity_price_results_list)
+```
+
+
+```{r}
+curiosity_graph <- all_data_check2 %>% select(bruinID.text, all_test_label, slider_2.response, results, priceresults, agegroup, cur_z)
+
+curiosity_graph <- curiosity_graph %>% mutate(priceresults = as.numeric(priceresults))
+
+curiosity_graph_summary <- curiosity_graph %>%
+  group_by(bruinID.text, all_test_label, agegroup) %>%
+  dplyr::summarise(
+    across(c(slider_2.response, results, priceresults, cur_z), mean, na.rm = TRUE)
+  )
+
+curiosity_graph_summary <- curiosity_graph_summary %>%
+  filter(!is.nan(slider_2.response))
+
+curiosity_graph_summary_y <- subset(curiosity_graph_summary, (agegroup %in% c("Young")))
+curiosity_graph_summary_o <- subset(curiosity_graph_summary, (agegroup %in% c("Older")))
+
+ggplot(curiosity_graph_summary_y, aes(x = slider_2.response, y = priceresults, linetype = all_test_label)) +
+  geom_smooth(se = FALSE, color = "black") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.position = c(0.85, 0.7), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+  
+  labs(
+    x = "Curiosity",
+    y = "Proportion Correct"
+  ) + ylim(0,1) + xlim(0,10)
+
+```
+
+```{r}
+ggplot(curiosity_graph_summary_o, aes(x = slider_2.response, y = priceresults, linetype = all_test_label)) +
+  geom_smooth(se = FALSE, color = "black") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.position = c(0.85, 0.75), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+  
+  labs(
+    x = "Curiosity",
+    y = "Proportion Correct"
+  ) + ylim(0,1)+ xlim(0,10)
+```
+```{r}
+# trait curiosity graph
+
+correlation_all_fig <- ggplot(all_data_check2, aes(x = trait_cur, y = priceresults, color = agegroup)) +
+  geom_smooth(method = lm, se = FALSE) +
+  labs(x = "State Curiosity", y = "Price Results Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+ 
+  labs(x = "Trait Curiosity", y = "Price Results Proportion Correct") +
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent')
+  ) +
+  ylim(0, 1)
+
+
+correlation_all_fig
+```
+```{r}
+correlation_all_fig <- ggplot(all_data_check2, aes(x = trait_cur, y = results, color = agegroup)) +
+  geom_smooth(method = lm, se = FALSE) +
+  labs(x = "State Curiosity", y = "Price Results Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+ 
+  labs(x = "Trait Curiosity", y = "Button Response Proportion Correct") +
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent')
+  ) +
+  ylim(0, 1)
+
+
+correlation_all_fig
+```
+
+
+
+```{r}
+correlation_all_fig_s <- ggplot(all_data_check2, aes(x = slider_2.response, y = priceresults, color = agegroup)) +
+  geom_smooth(method = lm, se = FALSE) +
+  labs(x = "State Curiosity", y = "Price Results Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+ 
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent')
+  ) +
+  ylim(0, 1)
+
+
+correlation_all_fig_s
+```
+```{r}
+correlation_all_fig_s <- ggplot(all_data_check2, aes(x = slider_2.response, y = results, color = agegroup)) +
+  geom_smooth(method = lm, se = FALSE) +
+  labs(x = "State Curiosity", y = "Price Results Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+ 
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent')
+  ) +
+  ylim(0, 1)
+
+
+correlation_all_fig_s
+```
+
+
+```{r}
+#button response
+ggplot(curiosity_graph_summary_y, aes(x = slider_2.response, y = results, linetype = all_test_label)) +
+  geom_smooth(se = FALSE, color = "black") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+  
+  labs(
+    x = "Curiosity",
+    y = "Proportion Correct"
+  ) + xlim(0,10) + ylim(0,1)
+```
+
+```{r}
+ggplot(curiosity_graph_summary_o, aes(x = slider_2.response, y = results, color = all_test_label)) +
+   geom_smooth(se = FALSE) +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+  
+  labs(
+    x = "Curiosity",
+    y = "Proportion Correct"
+  ) + xlim(0,10) + ylim(0,1)
+
+ggplot(curiosity_graph_summary_o, 
+       aes(x = slider_2.response, y = results, linetype = all_test_label)) +
+  geom_smooth(se = FALSE, color = "black") +
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent'),
+    legend.title = element_blank(),
+    axis.line.x = element_line(color = "black", size = .3),
+    axis.line.y = element_line(color = "black", size = .3),
+    axis.ticks.x = element_blank()
+  ) +
+  labs(
+    x = "Curiosity",
+    y = "Proportion Correct"
+  ) +
+  xlim(0, 10) +
+  ylim(0, 1)
+```
+
+```{r}
+shop_stat <- all_data_updated %>% select(bruinID.text, agegroup,slider.response)
+shop_stat <- drop_na(shop_stat)
+
+shop_stat_online <- all_data_updated %>% select(bruinID.text, agegroup,slider_online.response)
+shop_stat_online <- drop_na(shop_stat_online)
+```
+
+```{r}
+shop_stat_figure <- shop_stat%>%
+  group_by(agegroup) %>%
+  summarise_at(vars(slider.response), list(slider.response = mean)) %>%
+  as.data.frame()
+
+shop_stat_figure$agegroup <- factor(shop_stat_figure$agegroup, levels = c("Young", "Older"))
+
+shop_stat_graph <- ggplot(data=shop_stat_figure, aes(x=agegroup, y= slider.response)) +
+geom_bar(stat="identity", position=position_dodge(), col = "black")+
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  guides(fill = guide_legend(reverse = FALSE)) +
+  labs(x = "Age Group", y = "Grocery Shopping") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.7, 0.8), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank()) +ylim(0,10)
+
+shop_stat_graph
+
+```
+
+```{r}
+t.test(slider.response ~ agegroup, data = shop_stat, var.equal = TRUE)
+
+shop_stat_young <- subset(shop_stat, shop_stat$agegroup== "Young")
+shop_stat_older <- subset(shop_stat, shop_stat$agegroup== "Older")
+
+mean(shop_stat_young$slider.response)
+sd(shop_stat_young$slider.response)
+
+mean(shop_stat_older$slider.response)
+sd(shop_stat_older$slider.response)
+```
+
+
+```{r}
+shop_stat_figure_online <- shop_stat_online%>%
+  group_by(agegroup) %>%
+  summarise_at(vars(slider_online.response), list(slider_online.response = mean)) %>%
+  as.data.frame()
+
+shop_stat_figure_online$agegroup <- factor(shop_stat_figure_online$agegroup, levels = c("Young", "Older"))
+
+shop_stat_graph_online <- ggplot(data=shop_stat_figure_online, aes(x=agegroup, y= slider_online.response)) +
+geom_bar(stat="identity", position=position_dodge(), col = "black")+
+  scale_fill_manual(values=c("#9AC0CD", "#68838B")) +
+  guides(fill = guide_legend(reverse = FALSE)) +
+  labs(x = "Age Group", y = "Online Grocery Shopping") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'),legend.direction = "horizontal",legend.position = c(0.7, 0.8), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank()) + ylim(0,10)
+
+shop_stat_graph_online
+```
+
+```{r}
+t.test(slider_online.response ~ agegroup, data = shop_stat_online, var.equal = TRUE)
+
+shop_stat_online_young <- subset(shop_stat_online, shop_stat_online$agegroup== "Young")
+shop_stat_online_older <- subset(shop_stat_online, shop_stat_online$agegroup== "Older")
+
+mean(shop_stat_online_young$slider_online.response)
+sd(shop_stat_online_young$slider_online.response)
+
+mean(shop_stat_online_older$slider_online.response)
+sd(shop_stat_online_older$slider_online.response)
+```
+```{r}
+#curiosity and age group
+#cur_z*all_list+ trait_cur_z
+t.test(slider_2.response ~ agegroup, data = all_data_check2, var.equal = TRUE)
+
+all_data_check2_young <- subset(all_data_check2, all_data_check2$agegroup== "Young")
+all_data_check2_older <- subset(all_data_check2, all_data_check2$agegroup== "Older")
+
+
+trait_curiosity <- all_data_check2 %>% select(bruinID.text, agegroup, trait_cur)
+trait_curiosity <- trait_curiosity[!duplicated(trait_curiosity), ]
+
+trait_curiosity_young <- subset(trait_curiosity, trait_curiosity$agegroup== "Young")
+trait_curiosity_older <- subset(trait_curiosity, trait_curiosity$agegroup== "Older")
+
+t.test(trait_cur ~ agegroup, data = trait_curiosity, var.equal = TRUE)
+
+mean(all_data_check2_young$slider_2.response)
+sd(all_data_check2_young$slider_2.response)
+
+mean(all_data_check2_older$slider_2.response)
+sd(all_data_check2_older$slider_2.response)
+
+mean(trait_curiosity_young$trait_cur)
+sd(trait_curiosity_young$trait_cur)
+
+mean(trait_curiosity_older$trait_cur)
+sd(trait_curiosity_older$trait_cur)
+```
+
+```{r}
+curiosity_graph_summary$agegroup <- factor(
+  curiosity_graph_summary$agegroup,
+  levels = c("Young", "Older")  # put top-to-bottom order here
+)
+
+ggplot(curiosity_graph_summary,
+       aes(x = slider_2.response,
+           y = priceresults,
+          linetype = agegroup,
+           color = agegroup)) +
+  geom_smooth(se = FALSE) +
+  scale_color_manual(values = c("black", "black")) +
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = "transparent"),
+    legend.position = c(0.85, 0.75),
+    legend.title = element_blank(),
+    axis.line.x = element_line(color = "black", linewidth = .3),
+    axis.line.y = element_line(color = "black", linewidth = .3),
+    axis.ticks.x = element_blank()
+  ) +
+  labs(
+    x = "Curiosity",
+    y = "Proportion Correct"
+  ) +
+  ylim(0, 1) +
+  xlim(0, 10)
+```
+```{r}
+ggplot(curiosity_graph_summary,
+       aes(x = slider_2.response,
+           y = results,
+          linetype = agegroup,
+           color = agegroup)) +
+  geom_smooth(se = FALSE) +
+  scale_color_manual(values = c("black", "black")) +
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = "transparent"),
+    legend.position = c(0.85, 0.45),
+    legend.title = element_blank(),
+    axis.line.x = element_line(color = "black", linewidth = .3),
+    axis.line.y = element_line(color = "black", linewidth = .3),
+    axis.ticks.x = element_blank()
+  ) +
+  labs(
+    x = "Curiosity",
+    y = "Proportion Correct"
+  ) +
+  ylim(0, 1) +
+  xlim(0, 10)
+```
+
+
+```{r}
+correlation_all_fig_s <- ggplot(all_data_check2, aes(x = slider_2.response, y = results, color = agegroup)) +
+  geom_smooth(method = loess, se = FALSE) +
+  labs(x = "State Curiosity", y = "Price Results Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+ 
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent')
+  ) +
+  ylim(0, 1)
+
+
+correlation_all_fig_s
+```
+```{r}
+correlation_all_fig_s <- ggplot(all_data_check2, aes(x = slider_2.response, y = priceresults, color = agegroup)) +
+  geom_smooth(method = loess, se = FALSE) +
+  labs(x = "State Curiosity", y = "Price Results Proportion Correct") +
+  theme(text=element_text(size=16,  family="Times New Roman"), panel.background = element_rect(fill='transparent'), legend.title = element_blank(),axis.line.x = element_line(color="black", size = .3), axis.line.y = element_line(color="black", size = .3), axis.ticks.x=element_blank())+ 
+  theme(
+    text = element_text(size = 16, family = "Times New Roman"),
+    panel.background = element_rect(fill = 'transparent')
+  ) +
+  ylim(0, 1)
+
+
+correlation_all_fig_s
+```
+
